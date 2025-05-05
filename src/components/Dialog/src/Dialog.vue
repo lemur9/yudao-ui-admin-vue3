@@ -6,6 +6,7 @@ defineOptions({ name: 'Dialog' })
 const slots = useSlots()
 
 const props = defineProps({
+  dialogVisible: propTypes.bool.def(false),
   modelValue: propTypes.bool.def(false),
   title: propTypes.string.def('Dialog'),
   fullscreen: propTypes.bool.def(true),
@@ -68,7 +69,7 @@ const dialogStyle = computed(() => {
     draggable
     class="com-dialog"
     :show-close="false"
-    @close="$emit('update:modelValue', false)"
+    @close="$emit('update:dialogVisible', false)"
   >
     <template #header="{ close }">
       <div class="relative h-54px flex items-center justify-between pl-15px pr-15px">
