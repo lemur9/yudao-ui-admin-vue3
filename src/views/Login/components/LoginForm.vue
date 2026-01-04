@@ -17,7 +17,21 @@
       </el-col>
       <el-col :span="24" class="px-10px">
         <el-form-item v-if="loginData.tenantEnable === 'true'" prop="tenantName">
+          <el-select
+            v-if="loginData.selectEnable === 'true'"
+            :placeholder="t('login.tenantNamePlaceholder')"
+            v-model="loginData.loginForm.tenantName"
+            style="width: 100%; margin-top: 10px"
+          >
+            <el-option
+              v-for="item in loginData.loginForm.tenants"
+              :key="item.id"
+              :label="item.name"
+              :value="item.name"
+            />
+          </el-select>
           <el-input
+            v-else
             v-model="loginData.loginForm.tenantName"
             :placeholder="t('login.tenantNamePlaceholder')"
             :prefix-icon="iconHouse"
@@ -129,7 +143,7 @@
           </div>
         </el-form-item>
       </el-col>
-      <el-divider content-position="center">萌新必读</el-divider>
+      <!-- <el-divider content-position="center">萌新必读</el-divider>
       <el-col :span="24" class="px-10px">
         <el-form-item>
           <div class="w-full flex justify-between">
@@ -143,7 +157,7 @@
             </el-link>
           </div>
         </el-form-item>
-      </el-col>
+      </el-col> -->
     </el-row>
   </el-form>
 </template>
@@ -187,11 +201,18 @@ const loginData = reactive({
   isShowPassword: false,
   captchaEnable: import.meta.env.VITE_APP_CAPTCHA_ENABLE,
   tenantEnable: import.meta.env.VITE_APP_TENANT_ENABLE,
+  selectEnable: import.meta.env.VITE_TENANT_SELECT_SWITCH,
   loginForm: {
     tenantName: import.meta.env.VITE_APP_DEFAULT_LOGIN_TENANT || '',
     username: import.meta.env.VITE_APP_DEFAULT_LOGIN_USERNAME || '',
     password: import.meta.env.VITE_APP_DEFAULT_LOGIN_PASSWORD || '',
     captchaVerification: '',
+    tenants: [
+      {
+        id: '',
+        name: ''
+      }
+    ],
     rememberMe: true // 默认记录我。如果不需要，可手动修改
   }
 })
@@ -223,17 +244,27 @@ const getTenantId = async () => {
 }
 // 记住我
 const getLoginFormCache = () => {
-  const loginForm = authUtil.getLoginForm()
-  if (loginForm) {
-    loginData.loginForm = {
-      ...loginData.loginForm,
-      username: loginForm.username ? loginForm.username : loginData.loginForm.username,
-      password: loginForm.password ? loginForm.password : loginData.loginForm.password,
-      rememberMe: loginForm.rememberMe,
-      tenantName: loginForm.tenantName ? loginForm.tenantName : loginData.loginForm.tenantName
+  if (loginData.loginForm.rememberMe) {
+    const loginForm = authUtil.getLoginForm()
+    if (loginForm) {
+      loginData.loginForm = {
+        ...loginData.loginForm,
+        username: loginForm.username ? loginForm.username : loginData.loginForm.username,
+        password: loginForm.password ? loginForm.password : loginData.loginForm.password,
+        rememberMe: loginForm.rememberMe,
+        tenantName: loginForm.tenantName ? loginForm.tenantName : loginData.loginForm.tenantName
+      }
     }
   }
 }
+
+const getTenant = async () => {
+  const tenants = await LoginApi.getTenant()
+  if (tenants) {
+    loginData.loginForm.tenants = tenants
+  }
+}
+
 // 根据域名，获得租户信息
 const getTenantByWebsite = async () => {
   if (loginData.tenantEnable === 'true') {
@@ -332,6 +363,7 @@ watch(
   }
 )
 onMounted(() => {
+  loginData.tenantEnable === 'true' && getTenant()
   getLoginFormCache()
   getTenantByWebsite()
 })

@@ -32,6 +32,11 @@ export const getTenantIdByName = (name: string) => {
   return request.get({ url: '/system/tenant/get-id-by-name?name=' + name })
 }
 
+// 使用租户名，获得租户编号
+export const getTenant = () => {
+  return request.get({ url: '/system/tenant/simple-list'})
+}
+
 // 使用租户域名，获得租户信息
 export const getTenantByWebsite = (website: string) => {
   return request.get({ url: '/system/tenant/get-by-website?website=' + website })
@@ -75,6 +80,7 @@ export const socialAuthRedirect = (type: number, redirectUri: string) => {
     url: '/system/auth/social-auth-redirect?type=' + type + '&redirectUri=' + redirectUri
   })
 }
+
 // 获取验证图片以及 token
 export const getCode = (data: any) => {
   return request.postOriginal({ url: 'system/captcha/get', data })
