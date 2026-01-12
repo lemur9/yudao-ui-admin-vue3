@@ -171,6 +171,7 @@ import { useIcon } from '@/hooks/web/useIcon'
 import * as authUtil from '@/utils/auth'
 import { usePermissionStore } from '@/store/modules/permission'
 import * as LoginApi from '@/api/login'
+import * as TenantApi from '@/api/system/tenant'
 import { LoginStateEnum, useFormValid, useLoginState } from './useLogin'
 
 defineOptions({ name: 'LoginForm' })
@@ -259,7 +260,7 @@ const getLoginFormCache = () => {
 }
 
 const getTenant = async () => {
-  const tenants = await LoginApi.getTenant()
+  const tenants = await TenantApi.getTenantList()
   if (tenants) {
     loginData.loginForm.tenants = tenants
   }

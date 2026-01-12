@@ -32,11 +32,6 @@ export const getTenantIdByName = (name: string) => {
   return request.get({ url: '/system/tenant/get-id-by-name?name=' + name })
 }
 
-// 使用租户名，获得租户编号
-export const getTenant = () => {
-  return request.get({ url: '/system/tenant/simple-list'})
-}
-
 // 使用租户域名，获得租户信息
 export const getTenantByWebsite = (website: string) => {
   return request.get({ url: '/system/tenant/get-by-website?website=' + website })
